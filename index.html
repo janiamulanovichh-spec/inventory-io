@@ -385,13 +385,17 @@ input:focus, select:focus { border-color: #1a73e8; }
 <script>
 const SUPABASE_URL = 'https://upsqqugjckahonmlkciq.supabase.co'
 const SUPABASE_KEY = 'sb_publishable_QR1bivPH7gCnafMLe49mQw_Bvttg3am'
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+
+const _sbc = window._sbc || supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: {
-    storageKey: 'inventory-io-auth',
+    storageKey: 'inv-io-v1',
     autoRefreshToken: true,
-    persistSession: true
+    persistSession: true,
+    detectSessionInUrl: false
   }
 })
+window._sbc = _sbc
+const sb = _sbc
 
 const PLATFORM_FEE = 0.10
 
