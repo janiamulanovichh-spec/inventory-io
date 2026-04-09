@@ -464,9 +464,11 @@ async function handleAuth() {
 
 async function logout() {
   await sb.auth.signOut()
-  products = []
-  toast('Signed out.')
+  localStorage.clear()
+  sessionStorage.clear()
+  location.reload()
 }
+
 
 // Shop Dashboard
 async function showShopDashboard(user) {
