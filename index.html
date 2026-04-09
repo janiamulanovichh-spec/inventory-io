@@ -410,20 +410,28 @@ let selectedRole = 'shop'
 
 // Auth state
 async function initApp() {
-  const { data: { session } } = await Promise.race([
-    sb.auth.getSession(),
-    new Promise(resolve => setTimeout(() => resolve({ data: { session: null } }), 5000))
-  ])
-  
-  if (session) {
-    document.getElementById('auth-screen').classList.add('hidden')
-    const role = await getUserRole(session.user.id)
-    if (role === 'supplier') {
-      showSupplierDashboard(session.user)
+  try {
+    const { data: { session } } = await Promise.race([
+      sb.auth.getSession(),
+      new Promise(resolve => setTimeout(() => resolve({ data: { session: null } }), 5000))
+    ])
+    
+    console.log('Session:', session?.user?.email)
+    
+    if (session && session.user) {
+      document.getElementById('auth-screen').classList.add('hidden')
+      const role = await getUserRole(session.user.id)
+      console.log('Role:', role)
+      if (role === 'supplier') {
+        await showSupplierDashboard(session.user)
+      } else {
+        await showShopDashboard(session.user)
+      }
     } else {
-      showShopDashboard(session.user)
+      document.getElementById('auth-screen').classList.remove('hidden')
     }
-  } else {
+  } catch(e) {
+    console.error('initApp error:', e)
     document.getElementById('auth-screen').classList.remove('hidden')
   }
 }
