@@ -473,9 +473,11 @@ async function handleAuth() {
       await sb.from('suppliers').insert([{ user_id: data.user.id, business_name: bizName }])
     }
     toast('Account created! Welcome to Inventory.io')
+    await initApp()
   } else {
     const { error } = await sb.auth.signInWithPassword({ email, password })
     if (error) { toast('Invalid email or password.'); return }
+    await initApp()
   }
 }
 
