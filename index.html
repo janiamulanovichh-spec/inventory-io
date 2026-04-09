@@ -813,50 +813,65 @@ async function saveProfile() {
 
 async function loadSupplierOrders() {
   if (!supplierProfile) return
-  const { data, error } = await sb.from('orders')
-    .select('*, catalog(name, unit)')
-    .eq('supplier_id', supplierProfile.id)
-    .order('created_at', { ascending: false })
-  const el = document.getElementById('supplier-orders-list')
-  if (error || !data?.length) { el.innerHTML = '<p style="color:#888;font-size:14px;">No orders yet.</p>'; return }
-  el.innerHTML = `
-    <div class="table-wrapper">
-      <table>
-        <thead><tr><th>Product</th><th>Qty</th><th>Total</th><th>Your earnings</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
-        <tbody>
-          ${data.map(o => `
-            <tr>
-              <td>${esc(o.catalog?.name || '—')}</td>
-              <td>${o.quantity} ${o.catalog?.unit || ''}</td>
-              <td>S/. ${o.total_price.toLocaleString('es-PE')}</td>
-              <td>S/. ${(o.total_price - o.platform_fee).toLocaleString('es-PE')}</td>
-              <td><span class="status-${o.status}">${o.status}</span></td>
-              <td>${new Date(o.created_at).toLocaleDateString('es-PE')}</td>
-              <td>
-                ${o.status === 'pending' ? `<button class="btn-success" onclick="updateOrderStatus(${o.id}, 'confirmed')">Confirm</button>` : ''}
-                ${o.status === 'confirmed' ? `<button class="btn-primary" onclick="updateOrderStatus(${o.id}, 'delivered')" style="width:auto;padding:6px 12px;">Mark Delivered</button>` : ''}
-              </td>
-            </tr>`).join('')}
-        </tbody>
-      </table>
-    </div>`
+  try {
+    const { data: { session } } = await sb.auth.getSession()
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/orders?supplier_id=eq.${supplierProfile.id}&order=created_at.desc&select=*,catalog(name,unit)`,
+      {
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${session.access_token}`
+        }
+      }
+    )
+    const data = await res.json()
+    const el = document.getElementById('supplier-orders-list')
+    if (!data?.length) { el.innerHTML = '<p style="color:#888;font-size:14px;">No orders yet.</p>'; return }
+    el.innerHTML = `
+      <div class="table-wrapper">
+        <table>
+          <thead><tr><th>Product</th><th>Qty</th><th>Total</th><th>Your earnings</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
+          <tbody>
+            ${data.map(o => `
+              <tr>
+                <td>${esc(o.catalog?.name || '—')}</td>
+                <td>${o.quantity} ${o.catalog?.unit || ''}</td>
+                <td>S/. ${o.total_price.toLocaleString('es-PE')}</td>
+                <td>S/. ${(o.total_price - o.platform_fee).toLocaleString('es-PE')}</td>
+                <td><span class="status-${o.status}">${o.status}</span></td>
+                <td>${new Date(o.created_at).toLocaleDateString('es-PE')}</td>
+                <td>
+                  ${o.status === 'pending' ? `<button class="btn-success" onclick="updateOrderStatus(${o.id}, 'confirmed')">Confirm</button>` : ''}
+                  ${o.status === 'confirmed' ? `<button class="btn-primary" style="width:auto;padding:6px 12px;" onclick="updateOrderStatus(${o.id}, 'delivered')">Mark Delivered</button>` : ''}
+                </td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`
+  } catch(e) {
+    toast('Error loading orders: ' + e.message)
+  }
 }
 
 async function updateOrderStatus(orderId, status) {
-  const { data: { session } } = await sb.auth.getSession()
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/orders?id=eq.${orderId}`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-      'apikey': SUPABASE_KEY,
-      'Authorization': `Bearer ${session.access_token}`,
-      'Prefer': 'return=minimal'
-    },
-    body: JSON.stringify({ status })
-  })
-  if (!res.ok) { toast('Error updating order.'); return }
-  await loadSupplierOrders()
-  toast(`Order marked as ${status}.`)
+  try {
+    const { data: { session } } = await sb.auth.getSession()
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/orders?id=eq.${orderId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${session.access_token}`,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({ status })
+    })
+    if (!res.ok) { toast('Error updating order.'); return }
+    toast(`Order marked as ${status}.`)
+    await loadSupplierOrders()
+  } catch(e) {
+    toast('Error: ' + e.message)
+  }
 }
 
 document.getElementById('edit-modal').addEventListener('click', function(e) {
