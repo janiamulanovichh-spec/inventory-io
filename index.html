@@ -12,7 +12,7 @@ body { font-family: sans-serif; background: #f4f6f9; color: #333; }
 nav { background: #1a73e8; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
 nav span { color: #fff; font-weight: bold; font-size: 16px; }
 .nav-links { display: flex; gap: 4px; align-items: center; }
-.nav-links a { color: #fff; text-decoration: none; font-size: 14px; padding: 6px 12px; border-radius: 6px; }
+.nav-links a { color: #fff; text-decoration: none; font-size: 14px; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
 .nav-links a:hover { background: rgba(255,255,255,0.2); }
 .btn-logout { background: rgba(255,255,255,0.2); color: #fff; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 14px; }
 .btn-logout:hover { background: rgba(255,255,255,0.35); }
@@ -29,21 +29,28 @@ th { background: #f0f4ff; padding: 12px 16px; text-align: left; font-size: 13px;
 td { padding: 12px 16px; border-bottom: 1px solid #eee; font-size: 14px; }
 tr:last-child td { border-bottom: none; }
 .low-stock { background: #fde8e8; color: #c0392b; font-weight: bold; padding: 3px 8px; border-radius: 5px; font-size: 13px; }
+.status-pending { background: #fff3cd; color: #856404; padding: 3px 8px; border-radius: 5px; font-size: 12px; font-weight: 500; }
+.status-confirmed { background: #d1fae5; color: #065f46; padding: 3px 8px; border-radius: 5px; font-size: 12px; font-weight: 500; }
+.status-delivered { background: #dbeafe; color: #1e40af; padding: 3px 8px; border-radius: 5px; font-size: 12px; font-weight: 500; }
 button { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; background: #e8f0fe; color: #1a73e8; margin-right: 4px; }
 button:hover { background: #d0e2ff; }
-.btn-add { padding: 10px; background: #1a73e8; color: #fff; font-size: 14px; font-weight: 500; width: 100%; border-radius: 8px; margin-top: 4px; }
-.btn-add:hover { background: #1558b0; }
-.section-card { background: #fff; border: 1px solid #eee; border-radius: 10px; padding: 24px; }
+.btn-primary { padding: 10px; background: #1a73e8; color: #fff; font-size: 14px; font-weight: 500; width: 100%; border-radius: 8px; margin-top: 4px; }
+.btn-primary:hover { background: #1558b0; }
+.btn-success { background: #d1fae5; color: #065f46; }
+.btn-success:hover { background: #a7f3d0; }
+.btn-danger { background: #fde8e8; color: #c0392b; }
+.btn-danger:hover { background: #fecaca; }
+.section-card { background: #fff; border: 1px solid #eee; border-radius: 10px; padding: 24px; margin-bottom: 24px; }
 .section-card h2 { font-size: 16px; font-weight: 600; color: #333; margin-bottom: 16px; }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .form-group { display: flex; flex-direction: column; gap: 5px; }
 .form-group.full { grid-column: 1 / -1; }
 label { font-size: 13px; color: #555; font-weight: 500; }
-input, select { padding: 9px 11px; border: 1px solid #ddd; border-radius: 7px; font-size: 14px; color: #333; background: #fff; outline: none; }
+input, select, textarea { padding: 9px 11px; border: 1px solid #ddd; border-radius: 7px; font-size: 14px; color: #333; background: #fff; outline: none; }
 input:focus, select:focus { border-color: #1a73e8; }
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; align-items: center; justify-content: center; }
 .modal-overlay.open { display: flex; }
-.modal { background: #fff; border-radius: 12px; padding: 24px; width: 90%; max-width: 440px; }
+.modal { background: #fff; border-radius: 12px; padding: 24px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
 .modal h3 { font-size: 17px; font-weight: 600; margin-bottom: 18px; }
 .modal-btns { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; }
 .btn-cancel { background: #f1f3f4; color: #333; }
@@ -52,17 +59,35 @@ input:focus, select:focus { border-color: #1a73e8; }
 .toast { position: fixed; bottom: 24px; right: 24px; background: #323232; color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 13px; opacity: 0; transform: translateY(10px); transition: all 0.25s; pointer-events: none; z-index: 999; }
 .toast.show { opacity: 1; transform: translateY(0); }
 .auth-wrapper { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #f4f6f9; }
-.auth-card { background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 32px; width: 90%; max-width: 380px; }
-.auth-card h2 { font-size: 20px; font-weight: 600; color: #333; margin-bottom: 24px; text-align: center; }
-.auth-card .form-group { margin-bottom: 16px; }
+.auth-card { background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 32px; width: 90%; max-width: 400px; }
+.auth-card h2 { font-size: 20px; font-weight: 600; color: #333; margin-bottom: 8px; text-align: center; }
+.auth-card .subtitle { font-size: 13px; color: #888; text-align: center; margin-bottom: 24px; }
+.auth-card .form-group { margin-bottom: 14px; }
 .auth-card input { width: 100%; }
 .auth-btn { width: 100%; padding: 11px; background: #1a73e8; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer; margin-top: 8px; }
 .auth-btn:hover { background: #1558b0; }
 .auth-switch { text-align: center; margin-top: 16px; font-size: 13px; color: #777; }
 .auth-switch a { color: #1a73e8; cursor: pointer; text-decoration: none; }
-.auth-switch a:hover { text-decoration: underline; }
+.role-selector { display: flex; gap: 12px; margin-bottom: 20px; }
+.role-btn { flex: 1; padding: 12px; border: 2px solid #eee; border-radius: 10px; background: #fff; cursor: pointer; text-align: center; transition: all 0.15s; }
+.role-btn:hover { border-color: #1a73e8; }
+.role-btn.selected { border-color: #1a73e8; background: #e8f0fe; }
+.role-btn .role-icon { font-size: 24px; margin-bottom: 4px; }
+.role-btn .role-label { font-size: 13px; font-weight: 500; color: #333; }
+.role-btn .role-desc { font-size: 11px; color: #888; margin-top: 2px; }
+.supplier-card { background: #fff; border: 1px solid #eee; border-radius: 10px; padding: 16px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.supplier-info h4 { font-size: 14px; font-weight: 600; color: #333; margin-bottom: 4px; }
+.supplier-info p { font-size: 12px; color: #888; }
+.catalog-item { background: #fff; border: 1px solid #eee; border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.catalog-item-info h4 { font-size: 14px; font-weight: 500; color: #333; }
+.catalog-item-info p { font-size: 12px; color: #888; margin-top: 2px; }
+.catalog-item-price { font-size: 16px; font-weight: 600; color: #1a73e8; }
+.tab-bar { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 2px solid #eee; }
+.tab { padding: 10px 16px; font-size: 14px; color: #888; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+.tab.active { color: #1a73e8; border-bottom-color: #1a73e8; font-weight: 500; }
 .hidden { display: none; }
-@media (max-width: 600px) { .stats-row { flex-direction: column; } .form-grid { grid-template-columns: 1fr; } nav { flex-direction: column; align-items: flex-start; } }
+.badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 20px; background: #e8f0fe; color: #1a73e8; margin-left: 6px; }
+@media (max-width: 600px) { .stats-row { flex-direction: column; } .form-grid { grid-template-columns: 1fr; } nav { flex-direction: column; align-items: flex-start; } .role-selector { flex-direction: column; } }
   </style>
 </head>
 <body>
@@ -70,7 +95,22 @@ input:focus, select:focus { border-color: #1a73e8; }
 <!-- Auth Screen -->
 <div id="auth-screen" class="auth-wrapper">
   <div class="auth-card">
-    <h2 id="auth-title">Sign in to Inventory.io</h2>
+    <h2>Welcome to Inventory.io</h2>
+    <p class="subtitle" id="auth-subtitle">Sign in to your account</p>
+
+    <div id="role-selector" class="role-selector hidden">
+      <div class="role-btn selected" id="role-shop" onclick="selectRole('shop')">
+        <div class="role-icon">🏪</div>
+        <div class="role-label">Shop Owner</div>
+        <div class="role-desc">Manage inventory & order supplies</div>
+      </div>
+      <div class="role-btn" id="role-supplier" onclick="selectRole('supplier')">
+        <div class="role-icon">🏭</div>
+        <div class="role-label">Supplier</div>
+        <div class="role-desc">List products & receive orders</div>
+      </div>
+    </div>
+
     <div class="form-group">
       <label>Email</label>
       <input id="auth-email" type="email" placeholder="you@example.com" />
@@ -79,86 +119,228 @@ input:focus, select:focus { border-color: #1a73e8; }
       <label>Password</label>
       <input id="auth-password" type="password" placeholder="••••••••" />
     </div>
-    <button class="auth-btn" onclick="handleAuth()">Sign in</button>
+    <div id="supplier-name-group" class="form-group hidden">
+      <label>Business name</label>
+      <input id="auth-business" type="text" placeholder="e.g. Distribuidora Lima SAC" />
+    </div>
+
+    <button class="auth-btn" onclick="handleAuth()" id="auth-btn">Sign in</button>
     <div class="auth-switch">
       <span id="auth-switch-text">Don't have an account?</span>
-      <a onclick="toggleAuth()">Sign up</a>
+      <a onclick="toggleAuth()" id="auth-toggle-link">Sign up</a>
     </div>
   </div>
 </div>
 
-<!-- Main App -->
-<div id="app-screen" class="hidden">
+<!-- Shop Dashboard -->
+<div id="shop-screen" class="hidden">
   <nav>
     <span>Inventory.io</span>
     <div class="nav-links">
-      <a href="#">Dashboard</a>
-      <a href="#">Products</a>
-      <a href="#">Reports</a>
+      <a onclick="showShopTab('inventory')">Inventory</a>
+      <a onclick="showShopTab('suppliers')">Suppliers</a>
+      <a onclick="showShopTab('orders')">My Orders</a>
       <button class="btn-logout" onclick="logout()">Sign out</button>
     </div>
   </nav>
   <div class="container">
     <h1>Inventory.io</h1>
-    <h2>Product Dashboard</h2>
-    <p class="welcome" id="welcome-msg">Welcome back.</p>
-    <div id="stats-row" class="stats-row"></div>
-    <div class="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>Product</th>
-            <th>Price</th>
-            <th>Stock</th>
-            <th>Min Stock</th>
-            <th>Category</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="product-tbody">
-          <tr><td colspan="6" style="text-align:center;color:#888;padding:28px;">Loading...</td></tr>
-        </tbody>
-      </table>
+    <p class="welcome" id="shop-welcome">Welcome back.</p>
+
+    <!-- Inventory Tab -->
+    <div id="shop-inventory" class="shop-tab">
+      <div id="stats-row" class="stats-row"></div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Min Stock</th>
+              <th>Category</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="product-tbody">
+            <tr><td colspan="6" style="text-align:center;color:#888;padding:28px;">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="section-card">
+        <h2>Add New Product</h2>
+        <form onsubmit="return false;">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Product name</label>
+              <input id="f-name" type="text" placeholder="e.g Monitor" />
+            </div>
+            <div class="form-group">
+              <label>Price (S/.)</label>
+              <input id="f-price" type="number" placeholder="e.g 250" min="0" />
+            </div>
+            <div class="form-group">
+              <label>Stock quantity</label>
+              <input id="f-stock" type="number" placeholder="e.g 10" min="0" />
+            </div>
+            <div class="form-group">
+              <label>Minimum stock</label>
+              <input id="f-min" type="number" placeholder="e.g 5" min="0" />
+            </div>
+            <div class="form-group full">
+              <label>Category</label>
+              <select id="f-cat">
+                <option>Electronics</option>
+                <option>Furniture</option>
+                <option>Clothing</option>
+                <option>Food & Beverage</option>
+                <option>Hardware</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <button class="btn-primary" onclick="addProduct()">Add Product</button>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
-    <div class="section-card">
-      <h2>Add New Product</h2>
-      <form onsubmit="return false;">
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Product name</label>
-            <input id="f-name" type="text" placeholder="e.g Monitor" />
-          </div>
-          <div class="form-group">
-            <label>Price (S/.)</label>
-            <input id="f-price" type="number" placeholder="e.g 250" min="0" />
-          </div>
-          <div class="form-group">
-            <label>Stock quantity</label>
-            <input id="f-stock" type="number" placeholder="e.g 10" min="0" />
-          </div>
-          <div class="form-group">
-            <label>Minimum stock</label>
-            <input id="f-min" type="number" placeholder="e.g 5" min="0" />
-          </div>
-          <div class="form-group full">
-            <label>Category</label>
-            <select id="f-cat">
-              <option>Electronics</option>
-              <option>Furniture</option>
-              <option>Clothing</option>
-              <option>Other</option>
-            </select>
-          </div>
-          <div class="form-group full">
-            <button class="btn-add" onclick="addProduct()">Add Product</button>
-          </div>
+
+    <!-- Suppliers Tab -->
+    <div id="shop-suppliers" class="shop-tab hidden">
+      <div class="section-card">
+        <h2>Browse Suppliers</h2>
+        <div style="margin-bottom:16px;">
+          <input id="supplier-search" type="text" placeholder="Search by name or category..." style="width:100%;" oninput="filterSuppliers()" />
         </div>
-      </form>
+        <div id="suppliers-list">Loading suppliers...</div>
+      </div>
+    </div>
+
+    <!-- Orders Tab -->
+    <div id="shop-orders" class="shop-tab hidden">
+      <div class="section-card">
+        <h2>My Orders</h2>
+        <div id="shop-orders-list">Loading orders...</div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- Edit Modal -->
+<!-- Supplier Dashboard -->
+<div id="supplier-screen" class="hidden">
+  <nav style="background:#0f6e56;">
+    <span>Inventory.io — Supplier</span>
+    <div class="nav-links">
+      <a onclick="showSupplierTab('catalog')">My Catalog</a>
+      <a onclick="showSupplierTab('orders')">Orders</a>
+      <a onclick="showSupplierTab('profile')">Profile</a>
+      <button class="btn-logout" onclick="logout()">Sign out</button>
+    </div>
+  </nav>
+  <div class="container">
+    <h1 id="supplier-title">Supplier Dashboard</h1>
+    <p class="welcome" id="supplier-welcome">Manage your products and orders.</p>
+
+    <!-- Catalog Tab -->
+    <div id="supplier-catalog" class="supplier-tab">
+      <div class="section-card">
+        <h2>Add Product to Catalog</h2>
+        <form onsubmit="return false;">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Product name</label>
+              <input id="c-name" type="text" placeholder="e.g. Rice 50kg bag" />
+            </div>
+            <div class="form-group">
+              <label>Price (S/.)</label>
+              <input id="c-price" type="number" placeholder="e.g. 120" min="0" />
+            </div>
+            <div class="form-group">
+              <label>Unit</label>
+              <select id="c-unit">
+                <option>unit</option>
+                <option>kg</option>
+                <option>box</option>
+                <option>bag</option>
+                <option>liter</option>
+                <option>dozen</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Minimum order quantity</label>
+              <input id="c-min" type="number" placeholder="e.g. 10" min="1" />
+            </div>
+            <div class="form-group full">
+              <button class="btn-primary" onclick="addCatalogItem()">Add to Catalog</button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="section-card">
+        <h2>Your Products</h2>
+        <div id="catalog-list">Loading...</div>
+      </div>
+    </div>
+
+    <!-- Orders Tab -->
+    <div id="supplier-orders" class="supplier-tab hidden">
+      <div class="section-card">
+        <h2>Incoming Orders</h2>
+        <div id="supplier-orders-list">Loading orders...</div>
+      </div>
+    </div>
+
+    <!-- Profile Tab -->
+    <div id="supplier-profile" class="supplier-tab hidden">
+      <div class="section-card">
+        <h2>Business Profile</h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Business name</label>
+            <input id="p-name" type="text" />
+          </div>
+          <div class="form-group">
+            <label>Category</label>
+            <select id="p-category">
+              <option>Food & Beverage</option>
+              <option>Electronics</option>
+              <option>Hardware</option>
+              <option>Clothing</option>
+              <option>Cleaning</option>
+              <option>General</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Location (district)</label>
+            <input id="p-location" type="text" placeholder="e.g. Miraflores, Lima" />
+          </div>
+          <div class="form-group">
+            <label>Phone / WhatsApp</label>
+            <input id="p-phone" type="text" placeholder="e.g. +51 999 999 999" />
+          </div>
+          <div class="form-group full">
+            <button class="btn-primary" onclick="saveProfile()">Save Profile</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Order Modal -->
+<div id="order-modal" class="modal-overlay">
+  <div class="modal">
+    <h3>Place Order</h3>
+    <div id="order-modal-content"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeOrderModal()">Cancel</button>
+      <button class="btn-save" onclick="confirmOrder()">Confirm Order</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Product Modal -->
 <div id="edit-modal" class="modal-overlay">
   <div class="modal">
     <h3>Edit Product</h3>
@@ -185,6 +367,8 @@ input:focus, select:focus { border-color: #1a73e8; }
           <option>Electronics</option>
           <option>Furniture</option>
           <option>Clothing</option>
+          <option>Food & Beverage</option>
+          <option>Hardware</option>
           <option>Other</option>
         </select>
       </div>
@@ -203,40 +387,69 @@ const SUPABASE_URL = 'https://upsqqugjckahonmlkciq.supabase.co'
 const SUPABASE_KEY = 'sb_publishable_QR1bivPH7gCnafMLe49mQw_Bvttg3am'
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
 
-let products = []
-let editingId = null
-let isSignUp = false
+const PLATFORM_FEE = 0.10
 
-// Auth
-sb.auth.onAuthStateChange((event, session) => {
+let products = []
+let allSuppliers = []
+let supplierProfile = null
+let catalogItems = []
+let editingId = null
+let orderItem = null
+let isSignUp = false
+let selectedRole = 'shop'
+
+// Auth state
+sb.auth.onAuthStateChange(async (event, session) => {
   if (session) {
     document.getElementById('auth-screen').classList.add('hidden')
-    document.getElementById('app-screen').classList.remove('hidden')
-    document.getElementById('welcome-msg').textContent = `Welcome back, ${session.user.email}`
-    loadProducts()
+    const role = await getUserRole(session.user.id)
+    if (role === 'supplier') {
+      showSupplierDashboard(session.user)
+    } else {
+      showShopDashboard(session.user)
+    }
   } else {
     document.getElementById('auth-screen').classList.remove('hidden')
-    document.getElementById('app-screen').classList.add('hidden')
+    document.getElementById('shop-screen').classList.add('hidden')
+    document.getElementById('supplier-screen').classList.add('hidden')
   }
 })
 
+async function getUserRole(userId) {
+  const { data } = await sb.from('user_roles').select('role').eq('user_id', userId).single()
+  return data?.role || 'shop'
+}
+
+function selectRole(role) {
+  selectedRole = role
+  document.getElementById('role-shop').classList.toggle('selected', role === 'shop')
+  document.getElementById('role-supplier').classList.toggle('selected', role === 'supplier')
+  document.getElementById('supplier-name-group').classList.toggle('hidden', role === 'shop')
+}
+
 function toggleAuth() {
   isSignUp = !isSignUp
-  document.getElementById('auth-title').textContent = isSignUp ? 'Create your account' : 'Sign in to Inventory.io'
+  document.getElementById('auth-subtitle').textContent = isSignUp ? 'Create your account' : 'Sign in to your account'
   document.getElementById('auth-switch-text').textContent = isSignUp ? 'Already have an account?' : "Don't have an account?"
-  document.querySelector('.auth-btn').textContent = isSignUp ? 'Sign up' : 'Sign in'
+  document.getElementById('auth-toggle-link').textContent = isSignUp ? 'Sign in' : 'Sign up'
+  document.getElementById('auth-btn').textContent = isSignUp ? 'Sign up' : 'Sign in'
+  document.getElementById('role-selector').classList.toggle('hidden', !isSignUp)
 }
 
 async function handleAuth() {
   const email    = document.getElementById('auth-email').value.trim()
   const password = document.getElementById('auth-password').value
-
   if (!email || !password) { toast('Please enter email and password.'); return }
 
   if (isSignUp) {
-    const { error } = await sb.auth.signUp({ email, password })
+    const { data, error } = await sb.auth.signUp({ email, password })
     if (error) { toast(error.message); return }
-    toast('Account created! You are now signed in.')
+    await sb.from('user_roles').insert([{ user_id: data.user.id, role: selectedRole }])
+    if (selectedRole === 'supplier') {
+      const bizName = document.getElementById('auth-business').value.trim() || email
+      await sb.from('suppliers').insert([{ user_id: data.user.id, business_name: bizName }])
+    }
+    toast('Account created! Welcome to Inventory.io')
   } else {
     const { error } = await sb.auth.signInWithPassword({ email, password })
     if (error) { toast('Invalid email or password.'); return }
@@ -249,15 +462,29 @@ async function logout() {
   toast('Signed out.')
 }
 
-// Products
+// Shop Dashboard
+async function showShopDashboard(user) {
+  document.getElementById('shop-screen').classList.remove('hidden')
+  document.getElementById('supplier-screen').classList.add('hidden')
+  document.getElementById('shop-welcome').textContent = `Welcome back, ${user.email}`
+  showShopTab('inventory')
+  await loadProducts()
+}
+
+function showShopTab(tab) {
+  document.querySelectorAll('.shop-tab').forEach(t => t.classList.add('hidden'))
+  document.getElementById(`shop-${tab}`).classList.remove('hidden')
+  if (tab === 'suppliers') loadSuppliers()
+  if (tab === 'orders') loadShopOrders()
+}
+
 async function loadProducts() {
   const { data, error } = await sb.from('products').select('*').order('id')
   if (error) { toast('Error loading products.'); return }
   products = data
-  render()
+  renderStats()
+  renderTable()
 }
-
-function render() { renderStats(); renderTable() }
 
 function renderStats() {
   const total    = products.length
@@ -265,7 +492,7 @@ function renderStats() {
   const value    = products.reduce((s, p) => s + p.price * p.stock, 0)
   document.getElementById('stats-row').innerHTML = `
     <div class="stat-card"><p>Total Products</p><h3>${total}</h3></div>
-    <div class="stat-card"><p>Low Stock Items</p><h3>${lowStock}</h3></div>
+    <div class="stat-card"><p>Low Stock Items</p><h3 style="color:${lowStock>0?'#c0392b':'#1a73e8'}">${lowStock}</h3></div>
     <div class="stat-card"><p>Total Stock Value</p><h3>S/. ${value.toLocaleString('es-PE')}</h3></div>`
 }
 
@@ -277,7 +504,12 @@ function renderTable() {
   }
   tbody.innerHTML = products.map(p => {
     const isLow = p.stock < p.min
-    const stockCell = isLow ? `<span class="low-stock">${p.stock} ⚠</span>` : p.stock
+    const stockCell = isLow
+      ? `<span class="low-stock">${p.stock} ⚠</span>`
+      : p.stock
+    const reorderBtn = isLow
+      ? `<button class="btn-success" onclick="openOrderModal(${p.id}, '${esc(p.name)}')">Reorder</button>`
+      : ''
     return `
       <tr>
         <td>${esc(p.name)}</td>
@@ -286,16 +518,12 @@ function renderTable() {
         <td>${p.min}</td>
         <td>${esc(p.cat)}</td>
         <td>
+          ${reorderBtn}
           <button onclick="openEdit(${p.id})">Edit</button>
-          <button onclick="deleteProduct(${p.id})" style="background:#fde8e8;color:#c0392b;">Delete</button>
+          <button class="btn-danger" onclick="deleteProduct(${p.id})">Delete</button>
         </td>
       </tr>`
   }).join('')
-}
-
-function esc(s) {
-  return String(s).replace(/[&<>"']/g, c =>
-    ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]))
 }
 
 async function addProduct() {
@@ -304,19 +532,15 @@ async function addProduct() {
   const stock = parseInt(document.getElementById('f-stock').value)
   const min   = parseInt(document.getElementById('f-min').value)
   const cat   = document.getElementById('f-cat').value
-
   if (!name || isNaN(price) || isNaN(stock) || isNaN(min)) { toast('Please fill in all fields.'); return }
   if (price < 0 || stock < 0 || min < 0) { toast('Values cannot be negative.'); return }
-
   const { data: { user } } = await sb.auth.getUser()
   const { error } = await sb.from('products').insert([{ name, price, stock, min, cat, user_id: user.id }])
   if (error) { toast('Error adding product.'); return }
-
   document.getElementById('f-name').value  = ''
   document.getElementById('f-price').value = ''
   document.getElementById('f-stock').value = ''
   document.getElementById('f-min').value   = ''
-
   await loadProducts()
   toast(`"${name}" added successfully.`)
 }
@@ -356,7 +580,6 @@ async function saveEdit() {
   const min   = parseInt(document.getElementById('e-min').value)
   const cat   = document.getElementById('e-cat').value
   if (!name || isNaN(price) || isNaN(stock) || isNaN(min)) { toast('Please fill in all fields.'); return }
-  if (price < 0 || stock < 0 || min < 0) { toast('Values cannot be negative.'); return }
   const { error } = await sb.from('products').update({ name, price, stock, min, cat }).eq('id', p.id)
   if (error) { toast('Error updating product.'); return }
   closeModal()
@@ -364,8 +587,261 @@ async function saveEdit() {
   toast(`"${name}" updated successfully.`)
 }
 
+// Suppliers
+async function loadSuppliers() {
+  const { data, error } = await sb.from('suppliers').select('*, catalog(*)')
+  if (error) { document.getElementById('suppliers-list').innerHTML = 'Error loading suppliers.'; return }
+  allSuppliers = data
+  renderSuppliers(data)
+}
+
+function filterSuppliers() {
+  const q = document.getElementById('supplier-search').value.toLowerCase()
+  const filtered = allSuppliers.filter(s =>
+    s.business_name.toLowerCase().includes(q) ||
+    (s.category || '').toLowerCase().includes(q)
+  )
+  renderSuppliers(filtered)
+}
+
+function renderSuppliers(list) {
+  const el = document.getElementById('suppliers-list')
+  if (!list.length) { el.innerHTML = '<p style="color:#888;font-size:14px;">No suppliers found.</p>'; return }
+  el.innerHTML = list.map(s => `
+    <div class="supplier-card">
+      <div class="supplier-info">
+        <h4>${esc(s.business_name)}</h4>
+        <p>${s.category || 'General'} ${s.location ? '· ' + esc(s.location) : ''} ${s.phone ? '· ' + esc(s.phone) : ''}</p>
+        <p style="margin-top:4px;color:#1a73e8;font-size:12px;">${s.catalog?.length || 0} products available</p>
+      </div>
+      <button onclick="viewSupplierCatalog(${s.id}, '${esc(s.business_name)}')">View Catalog</button>
+    </div>`).join('')
+}
+
+let viewingSupplier = null
+async function viewSupplierCatalog(supplierId, name) {
+  viewingSupplier = supplierId
+  const { data } = await sb.from('catalog').select('*').eq('supplier_id', supplierId)
+  const el = document.getElementById('suppliers-list')
+  if (!data?.length) {
+    el.innerHTML = `<button onclick="loadSuppliers()" style="margin-bottom:16px;">← Back</button><p style="color:#888;">This supplier has no products listed yet.</p>`
+    return
+  }
+  el.innerHTML = `
+    <button onclick="loadSuppliers()" style="margin-bottom:16px;">← Back to suppliers</button>
+    <h3 style="font-size:15px;font-weight:600;margin-bottom:16px;">${esc(name)}</h3>
+    ${data.map(item => `
+      <div class="catalog-item">
+        <div class="catalog-item-info">
+          <h4>${esc(item.name)}</h4>
+          <p>Min order: ${item.min_order} ${item.unit}</p>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span class="catalog-item-price">S/. ${item.price.toLocaleString('es-PE')}/${item.unit}</span>
+          <button class="btn-success" onclick="openOrderModal(null, '${esc(item.name)}', ${item.id}, ${item.price}, ${item.min_order}, '${item.unit}', ${supplierId})">Order</button>
+        </div>
+      </div>`).join('')}`
+}
+
+// Orders
+function openOrderModal(productId, productName, catalogItemId, price, minOrder, unit, supplierId) {
+  orderItem = { productId, productName, catalogItemId, price, minOrder, unit, supplierId }
+  const fee = price ? (price * (minOrder || 1) * PLATFORM_FEE).toFixed(2) : '—'
+  document.getElementById('order-modal-content').innerHTML = `
+    <p style="margin-bottom:16px;font-size:14px;color:#555;">You are ordering: <strong>${esc(productName)}</strong></p>
+    ${price ? `<p style="margin-bottom:8px;font-size:13px;color:#888;">Price: S/. ${price}/${unit}</p>` : ''}
+    <div class="form-group" style="margin-bottom:16px;">
+      <label>Quantity ${unit ? '(' + unit + ')' : ''}</label>
+      <input id="order-qty" type="number" value="${minOrder || 1}" min="${minOrder || 1}" />
+    </div>
+    ${price ? `<p style="font-size:12px;color:#888;">Platform fee (10%): S/. <span id="fee-display">${fee}</span></p>` : ''}
+  `
+  if (price) {
+    document.getElementById('order-qty').addEventListener('input', function() {
+      const qty = parseFloat(this.value) || 0
+      document.getElementById('fee-display').textContent = (price * qty * PLATFORM_FEE).toFixed(2)
+    })
+  }
+  document.getElementById('order-modal').classList.add('open')
+}
+
+function closeOrderModal() {
+  document.getElementById('order-modal').classList.remove('open')
+  orderItem = null
+}
+
+async function confirmOrder() {
+  if (!orderItem) return
+  const qty = parseInt(document.getElementById('order-qty').value)
+  if (!qty || qty < 1) { toast('Please enter a valid quantity.'); return }
+  const { data: { user } } = await sb.auth.getUser()
+  const totalPrice = orderItem.price ? orderItem.price * qty : 0
+  const platformFee = totalPrice * PLATFORM_FEE
+  const { error } = await sb.from('orders').insert([{
+    shop_user_id: user.id,
+    supplier_id: orderItem.supplierId,
+    catalog_item_id: orderItem.catalogItemId,
+    quantity: qty,
+    total_price: totalPrice,
+    platform_fee: platformFee,
+    status: 'pending'
+  }])
+  if (error) { toast('Error placing order.'); return }
+  closeOrderModal()
+  toast('Order placed successfully!')
+}
+
+async function loadShopOrders() {
+  const { data: { user } } = await sb.auth.getUser()
+  const { data, error } = await sb.from('orders')
+    .select('*, catalog(name, unit), suppliers(business_name)')
+    .eq('shop_user_id', user.id)
+    .order('created_at', { ascending: false })
+  const el = document.getElementById('shop-orders-list')
+  if (error || !data?.length) { el.innerHTML = '<p style="color:#888;font-size:14px;">No orders yet.</p>'; return }
+  el.innerHTML = `
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Product</th><th>Supplier</th><th>Qty</th><th>Total</th><th>Fee</th><th>Status</th><th>Date</th></tr></thead>
+        <tbody>
+          ${data.map(o => `
+            <tr>
+              <td>${esc(o.catalog?.name || '—')}</td>
+              <td>${esc(o.suppliers?.business_name || '—')}</td>
+              <td>${o.quantity} ${o.catalog?.unit || ''}</td>
+              <td>S/. ${o.total_price.toLocaleString('es-PE')}</td>
+              <td>S/. ${o.platform_fee.toLocaleString('es-PE')}</td>
+              <td><span class="status-${o.status}">${o.status}</span></td>
+              <td>${new Date(o.created_at).toLocaleDateString('es-PE')}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`
+}
+
+// Supplier Dashboard
+async function showSupplierDashboard(user) {
+  document.getElementById('supplier-screen').classList.remove('hidden')
+  document.getElementById('shop-screen').classList.add('hidden')
+  const { data } = await sb.from('suppliers').select('*').eq('user_id', user.id).single()
+  supplierProfile = data
+  if (data) {
+    document.getElementById('supplier-title').textContent = data.business_name
+    document.getElementById('supplier-welcome').textContent = `Logged in as ${user.email}`
+    document.getElementById('p-name').value     = data.business_name || ''
+    document.getElementById('p-category').value = data.category || 'General'
+    document.getElementById('p-location').value = data.location || ''
+    document.getElementById('p-phone').value    = data.phone || ''
+  }
+  showSupplierTab('catalog')
+}
+
+function showSupplierTab(tab) {
+  document.querySelectorAll('.supplier-tab').forEach(t => t.classList.add('hidden'))
+  document.getElementById(`supplier-${tab}`).classList.remove('hidden')
+  if (tab === 'catalog') loadCatalog()
+  if (tab === 'orders') loadSupplierOrders()
+}
+
+async function loadCatalog() {
+  if (!supplierProfile) return
+  const { data } = await sb.from('catalog').select('*').eq('supplier_id', supplierProfile.id).order('id')
+  catalogItems = data || []
+  const el = document.getElementById('catalog-list')
+  if (!catalogItems.length) { el.innerHTML = '<p style="color:#888;font-size:14px;">No products yet. Add your first product above.</p>'; return }
+  el.innerHTML = catalogItems.map(item => `
+    <div class="catalog-item">
+      <div class="catalog-item-info">
+        <h4>${esc(item.name)}</h4>
+        <p>Min order: ${item.min_order} ${item.unit}</p>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span class="catalog-item-price">S/. ${item.price.toLocaleString('es-PE')}/${item.unit}</span>
+        <button class="btn-danger" onclick="deleteCatalogItem(${item.id})">Remove</button>
+      </div>
+    </div>`).join('')
+}
+
+async function addCatalogItem() {
+  if (!supplierProfile) { toast('Profile not loaded.'); return }
+  const name  = document.getElementById('c-name').value.trim()
+  const price = parseFloat(document.getElementById('c-price').value)
+  const unit  = document.getElementById('c-unit').value
+  const min   = parseInt(document.getElementById('c-min').value)
+  if (!name || isNaN(price) || isNaN(min)) { toast('Please fill in all fields.'); return }
+  const { error } = await sb.from('catalog').insert([{ supplier_id: supplierProfile.id, name, price, unit, min_order: min }])
+  if (error) { toast('Error adding product.'); return }
+  document.getElementById('c-name').value  = ''
+  document.getElementById('c-price').value = ''
+  document.getElementById('c-min').value   = ''
+  await loadCatalog()
+  toast(`"${name}" added to catalog.`)
+}
+
+async function deleteCatalogItem(id) {
+  const { error } = await sb.from('catalog').delete().eq('id', id)
+  if (error) { toast('Error removing product.'); return }
+  await loadCatalog()
+  toast('Product removed.')
+}
+
+async function saveProfile() {
+  if (!supplierProfile) return
+  const name     = document.getElementById('p-name').value.trim()
+  const category = document.getElementById('p-category').value
+  const location = document.getElementById('p-location').value.trim()
+  const phone    = document.getElementById('p-phone').value.trim()
+  if (!name) { toast('Business name is required.'); return }
+  const { error } = await sb.from('suppliers').update({ business_name: name, category, location, phone }).eq('id', supplierProfile.id)
+  if (error) { toast('Error saving profile.'); return }
+  supplierProfile = { ...supplierProfile, business_name: name, category, location, phone }
+  document.getElementById('supplier-title').textContent = name
+  toast('Profile saved.')
+}
+
+async function loadSupplierOrders() {
+  if (!supplierProfile) return
+  const { data, error } = await sb.from('orders')
+    .select('*, catalog(name, unit)')
+    .eq('supplier_id', supplierProfile.id)
+    .order('created_at', { ascending: false })
+  const el = document.getElementById('supplier-orders-list')
+  if (error || !data?.length) { el.innerHTML = '<p style="color:#888;font-size:14px;">No orders yet.</p>'; return }
+  el.innerHTML = `
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Product</th><th>Qty</th><th>Total</th><th>Your earnings</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
+        <tbody>
+          ${data.map(o => `
+            <tr>
+              <td>${esc(o.catalog?.name || '—')}</td>
+              <td>${o.quantity} ${o.catalog?.unit || ''}</td>
+              <td>S/. ${o.total_price.toLocaleString('es-PE')}</td>
+              <td>S/. ${(o.total_price - o.platform_fee).toLocaleString('es-PE')}</td>
+              <td><span class="status-${o.status}">${o.status}</span></td>
+              <td>${new Date(o.created_at).toLocaleDateString('es-PE')}</td>
+              <td>
+                ${o.status === 'pending' ? `<button class="btn-success" onclick="updateOrderStatus(${o.id}, 'confirmed')">Confirm</button>` : ''}
+                ${o.status === 'confirmed' ? `<button class="btn-primary" onclick="updateOrderStatus(${o.id}, 'delivered')" style="width:auto;padding:6px 12px;">Mark Delivered</button>` : ''}
+              </td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`
+}
+
+async function updateOrderStatus(orderId, status) {
+  const { error } = await sb.from('orders').update({ status }).eq('id', orderId)
+  if (error) { toast('Error updating order.'); return }
+  await loadSupplierOrders()
+  toast(`Order marked as ${status}.`)
+}
+
 document.getElementById('edit-modal').addEventListener('click', function(e) {
   if (e.target === this) closeModal()
+})
+document.getElementById('order-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeOrderModal()
 })
 
 let toastTimer
@@ -375,6 +851,11 @@ function toast(msg) {
   el.classList.add('show')
   clearTimeout(toastTimer)
   toastTimer = setTimeout(() => el.classList.remove('show'), 2500)
+}
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c =>
+    ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]))
 }
 </script>
 
