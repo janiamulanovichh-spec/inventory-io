@@ -412,7 +412,7 @@ let selectedRole = 'shop'
 async function initApp() {
   const { data: { session } } = await Promise.race([
     sb.auth.getSession(),
-    new Promise(resolve => setTimeout(() => resolve({ data: { session: null } }), 3000))
+    new Promise(resolve => setTimeout(() => resolve({ data: { session: null } }), 5000))
   ])
   
   if (session) {
