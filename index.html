@@ -11,9 +11,11 @@ body { font-family: sans-serif; background: #f4f6f9; color: #333; }
 .container { padding: 24px; max-width: 960px; margin: 0 auto; }
 nav { background: #1a73e8; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
 nav span { color: #fff; font-weight: bold; font-size: 16px; }
-.nav-links { display: flex; gap: 4px; }
+.nav-links { display: flex; gap: 4px; align-items: center; }
 .nav-links a { color: #fff; text-decoration: none; font-size: 14px; padding: 6px 12px; border-radius: 6px; }
 .nav-links a:hover { background: rgba(255,255,255,0.2); }
+.btn-logout { background: rgba(255,255,255,0.2); color: #fff; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 14px; }
+.btn-logout:hover { background: rgba(255,255,255,0.35); }
 h1 { font-size: 24px; margin-bottom: 4px; }
 h2 { font-size: 16px; font-weight: normal; color: #555; margin-bottom: 16px; }
 .welcome { font-size: 14px; color: #777; margin-bottom: 20px; }
@@ -49,80 +51,114 @@ input:focus, select:focus { border-color: #1a73e8; }
 .btn-save:hover { background: #1558b0; }
 .toast { position: fixed; bottom: 24px; right: 24px; background: #323232; color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 13px; opacity: 0; transform: translateY(10px); transition: all 0.25s; pointer-events: none; z-index: 999; }
 .toast.show { opacity: 1; transform: translateY(0); }
-.loading { text-align: center; padding: 40px; color: #888; font-size: 14px; }
+.auth-wrapper { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #f4f6f9; }
+.auth-card { background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 32px; width: 90%; max-width: 380px; }
+.auth-card h2 { font-size: 20px; font-weight: 600; color: #333; margin-bottom: 24px; text-align: center; }
+.auth-card .form-group { margin-bottom: 16px; }
+.auth-card input { width: 100%; }
+.auth-btn { width: 100%; padding: 11px; background: #1a73e8; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer; margin-top: 8px; }
+.auth-btn:hover { background: #1558b0; }
+.auth-switch { text-align: center; margin-top: 16px; font-size: 13px; color: #777; }
+.auth-switch a { color: #1a73e8; cursor: pointer; text-decoration: none; }
+.auth-switch a:hover { text-decoration: underline; }
+.hidden { display: none; }
 @media (max-width: 600px) { .stats-row { flex-direction: column; } .form-grid { grid-template-columns: 1fr; } nav { flex-direction: column; align-items: flex-start; } }
   </style>
 </head>
 <body>
 
-<nav>
-  <span>Inventory.io</span>
-  <div class="nav-links">
-    <a href="#">Dashboard</a>
-    <a href="#">Products</a>
-    <a href="#">Reports</a>
-  </div>
-</nav>
-
-<div class="container">
-  <h1>Inventory.io</h1>
-  <h2>Product Dashboard</h2>
-  <p class="welcome">Welcome back. Here is your inventory overview.</p>
-  <div id="stats-row" class="stats-row"></div>
-  <div class="table-wrapper">
-    <table>
-      <thead>
-        <tr>
-          <th>Product</th>
-          <th>Price</th>
-          <th>Stock</th>
-          <th>Min Stock</th>
-          <th>Category</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody id="product-tbody">
-        <tr><td colspan="6" class="loading">Loading products...</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="section-card">
-    <h2>Add New Product</h2>
-    <form onsubmit="return false;">
-      <div class="form-grid">
-        <div class="form-group">
-          <label>Product name</label>
-          <input id="f-name" type="text" placeholder="e.g Monitor" />
-        </div>
-        <div class="form-group">
-          <label>Price (S/.)</label>
-          <input id="f-price" type="number" placeholder="e.g 250" min="0" />
-        </div>
-        <div class="form-group">
-          <label>Stock quantity</label>
-          <input id="f-stock" type="number" placeholder="e.g 10" min="0" />
-        </div>
-        <div class="form-group">
-          <label>Minimum stock</label>
-          <input id="f-min" type="number" placeholder="e.g 5" min="0" />
-        </div>
-        <div class="form-group full">
-          <label>Category</label>
-          <select id="f-cat">
-            <option>Electronics</option>
-            <option>Furniture</option>
-            <option>Clothing</option>
-            <option>Other</option>
-          </select>
-        </div>
-        <div class="form-group full">
-          <button class="btn-add" onclick="addProduct()">Add Product</button>
-        </div>
-      </div>
-    </form>
+<!-- Auth Screen -->
+<div id="auth-screen" class="auth-wrapper">
+  <div class="auth-card">
+    <h2 id="auth-title">Sign in to Inventory.io</h2>
+    <div class="form-group">
+      <label>Email</label>
+      <input id="auth-email" type="email" placeholder="you@example.com" />
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input id="auth-password" type="password" placeholder="••••••••" />
+    </div>
+    <button class="auth-btn" onclick="handleAuth()">Sign in</button>
+    <div class="auth-switch">
+      <span id="auth-switch-text">Don't have an account?</span>
+      <a onclick="toggleAuth()">Sign up</a>
+    </div>
   </div>
 </div>
 
+<!-- Main App -->
+<div id="app-screen" class="hidden">
+  <nav>
+    <span>Inventory.io</span>
+    <div class="nav-links">
+      <a href="#">Dashboard</a>
+      <a href="#">Products</a>
+      <a href="#">Reports</a>
+      <button class="btn-logout" onclick="logout()">Sign out</button>
+    </div>
+  </nav>
+  <div class="container">
+    <h1>Inventory.io</h1>
+    <h2>Product Dashboard</h2>
+    <p class="welcome" id="welcome-msg">Welcome back.</p>
+    <div id="stats-row" class="stats-row"></div>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Min Stock</th>
+            <th>Category</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="product-tbody">
+          <tr><td colspan="6" style="text-align:center;color:#888;padding:28px;">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="section-card">
+      <h2>Add New Product</h2>
+      <form onsubmit="return false;">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Product name</label>
+            <input id="f-name" type="text" placeholder="e.g Monitor" />
+          </div>
+          <div class="form-group">
+            <label>Price (S/.)</label>
+            <input id="f-price" type="number" placeholder="e.g 250" min="0" />
+          </div>
+          <div class="form-group">
+            <label>Stock quantity</label>
+            <input id="f-stock" type="number" placeholder="e.g 10" min="0" />
+          </div>
+          <div class="form-group">
+            <label>Minimum stock</label>
+            <input id="f-min" type="number" placeholder="e.g 5" min="0" />
+          </div>
+          <div class="form-group full">
+            <label>Category</label>
+            <select id="f-cat">
+              <option>Electronics</option>
+              <option>Furniture</option>
+              <option>Clothing</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <button class="btn-add" onclick="addProduct()">Add Product</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
 <div id="edit-modal" class="modal-overlay">
   <div class="modal">
     <h3>Edit Product</h3>
@@ -169,18 +205,59 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
 
 let products = []
 let editingId = null
+let isSignUp = false
 
+// Auth
+sb.auth.onAuthStateChange((event, session) => {
+  if (session) {
+    document.getElementById('auth-screen').classList.add('hidden')
+    document.getElementById('app-screen').classList.remove('hidden')
+    document.getElementById('welcome-msg').textContent = `Welcome back, ${session.user.email}`
+    loadProducts()
+  } else {
+    document.getElementById('auth-screen').classList.remove('hidden')
+    document.getElementById('app-screen').classList.add('hidden')
+  }
+})
+
+function toggleAuth() {
+  isSignUp = !isSignUp
+  document.getElementById('auth-title').textContent = isSignUp ? 'Create your account' : 'Sign in to Inventory.io'
+  document.getElementById('auth-switch-text').textContent = isSignUp ? 'Already have an account?' : "Don't have an account?"
+  document.querySelector('.auth-btn').textContent = isSignUp ? 'Sign up' : 'Sign in'
+}
+
+async function handleAuth() {
+  const email    = document.getElementById('auth-email').value.trim()
+  const password = document.getElementById('auth-password').value
+
+  if (!email || !password) { toast('Please enter email and password.'); return }
+
+  if (isSignUp) {
+    const { error } = await sb.auth.signUp({ email, password })
+    if (error) { toast(error.message); return }
+    toast('Account created! You are now signed in.')
+  } else {
+    const { error } = await sb.auth.signInWithPassword({ email, password })
+    if (error) { toast('Invalid email or password.'); return }
+  }
+}
+
+async function logout() {
+  await sb.auth.signOut()
+  products = []
+  toast('Signed out.')
+}
+
+// Products
 async function loadProducts() {
   const { data, error } = await sb.from('products').select('*').order('id')
-  if (error) { toast('Error loading products.'); return; }
+  if (error) { toast('Error loading products.'); return }
   products = data
   render()
 }
 
-function render() {
-  renderStats()
-  renderTable()
-}
+function render() { renderStats(); renderTable() }
 
 function renderStats() {
   const total    = products.length
@@ -231,7 +308,8 @@ async function addProduct() {
   if (!name || isNaN(price) || isNaN(stock) || isNaN(min)) { toast('Please fill in all fields.'); return }
   if (price < 0 || stock < 0 || min < 0) { toast('Values cannot be negative.'); return }
 
-  const { error } = await sb.from('products').insert([{ name, price, stock, min, cat }])
+  const { data: { user } } = await sb.auth.getUser()
+  const { error } = await sb.from('products').insert([{ name, price, stock, min, cat, user_id: user.id }])
   if (error) { toast('Error adding product.'); return }
 
   document.getElementById('f-name').value  = ''
@@ -272,19 +350,15 @@ function closeModal() {
 async function saveEdit() {
   const p = products.find(x => x.id === editingId)
   if (!p) return
-
   const name  = document.getElementById('e-name').value.trim()
   const price = parseFloat(document.getElementById('e-price').value)
   const stock = parseInt(document.getElementById('e-stock').value)
   const min   = parseInt(document.getElementById('e-min').value)
   const cat   = document.getElementById('e-cat').value
-
   if (!name || isNaN(price) || isNaN(stock) || isNaN(min)) { toast('Please fill in all fields.'); return }
   if (price < 0 || stock < 0 || min < 0) { toast('Values cannot be negative.'); return }
-
-  const { error } = await sb.from('products').update({ name, price, stock, min, cat }).eq('id', editingId)
+  const { error } = await sb.from('products').update({ name, price, stock, min, cat }).eq('id', p.id)
   if (error) { toast('Error updating product.'); return }
-
   closeModal()
   await loadProducts()
   toast(`"${name}" updated successfully.`)
@@ -302,8 +376,6 @@ function toast(msg) {
   clearTimeout(toastTimer)
   toastTimer = setTimeout(() => el.classList.remove('show'), 2500)
 }
-
-loadProducts()
 </script>
 
 </body>
