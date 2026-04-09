@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inventory.io</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: sans-serif; background: #f4f6f9; color: #333; }
+.container { padding: 24px; max-width: 960px; margin: 0 auto; }
+nav { background: #1a73e8; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+nav span { color: #fff; font-weight: bold; font-size: 16px; }
+.nav-links { display: flex; gap: 4px; }
+.nav-links a { color: #fff; text-decoration: none; font-size: 14px; padding: 6px 12px; border-radius: 6px; }
+.nav-links a:hover { background: rgba(255,255,255,0.2); }
+h1 { font-size: 24px; margin-bottom: 4px; }
+h2 { font-size: 16px; font-weight: normal; color: #555; margin-bottom: 16px; }
+.welcome { font-size: 14px; color: #777; margin-bottom: 20px; }
+.stats-row { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+.stat-card { background: #fff; padding: 20px 24px; border: 1px solid #eee; border-radius: 10px; border-left: 4px solid #1a73e8; flex: 1; min-width: 160px; }
+.stat-card p { color: #888; font-size: 13px; margin-bottom: 8px; }
+.stat-card h3 { font-size: 26px; color: #1a73e8; font-weight: 600; }
+.table-wrapper { overflow-x: auto; border-radius: 10px; border: 1px solid #eee; margin-bottom: 24px; }
+table { width: 100%; border-collapse: collapse; background: #fff; }
+th { background: #f0f4ff; padding: 12px 16px; text-align: left; font-size: 13px; color: #555; white-space: nowrap; }
+td { padding: 12px 16px; border-bottom: 1px solid #eee; font-size: 14px; }
+tr:last-child td { border-bottom: none; }
+.low-stock { background: #fde8e8; color: #c0392b; font-weight: bold; padding: 3px 8px; border-radius: 5px; font-size: 13px; }
+button { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; background: #e8f0fe; color: #1a73e8; margin-right: 4px; }
+button:hover { background: #d0e2ff; }
+.btn-add { padding: 10px; background: #1a73e8; color: #fff; font-size: 14px; font-weight: 500; width: 100%; border-radius: 8px; margin-top: 4px; }
+.btn-add:hover { background: #1558b0; }
+.section-card { background: #fff; border: 1px solid #eee; border-radius: 10px; padding: 24px; }
+.section-card h2 { font-size: 16px; font-weight: 600; color: #333; margin-bottom: 16px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group.full { grid-column: 1 / -1; }
+label { font-size: 13px; color: #555; font-weight: 500; }
+input, select { padding: 9px 11px; border: 1px solid #ddd; border-radius: 7px; font-size: 14px; color: #333; background: #fff; outline: none; }
+input:focus, select:focus { border-color: #1a73e8; }
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: #fff; border-radius: 12px; padding: 24px; width: 90%; max-width: 440px; }
+.modal h3 { font-size: 17px; font-weight: 600; margin-bottom: 18px; }
+.modal-btns { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; }
+.btn-cancel { background: #f1f3f4; color: #333; }
+.btn-save { background: #1a73e8; color: #fff; }
+.btn-save:hover { background: #1558b0; }
+.toast { position: fixed; bottom: 24px; right: 24px; background: #323232; color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 13px; opacity: 0; transform: translateY(10px); transition: all 0.25s; pointer-events: none; z-index: 999; }
+.toast.show { opacity: 1; transform: translateY(0); }
+.loading { text-align: center; padding: 40px; color: #888; font-size: 14px; }
+@media (max-width: 600px) { .stats-row { flex-direction: column; } .form-grid { grid-template-columns: 1fr; } nav { flex-direction: column; align-items: flex-start; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <span>Inventory.io</span>
+  <div class="nav-links">
+    <a href="#">Dashboard</a>
+    <a href="#">Products</a>
+    <a href="#">Reports</a>
+  </div>
+</nav>
+
+<div class="container">
+  <h1>Inventory.io</h1>
+  <h2>Product Dashboard</h2>
+  <p class="welcome">Welcome back. Here is your inventory overview.</p>
+  <div id="stats-row" class="stats-row"></div>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Price</th>
+          <th>Stock</th>
+          <th>Min Stock</th>
+          <th>Category</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="product-tbody">
+        <tr><td colspan="6" class="loading">Loading products...</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="section-card">
+    <h2>Add New Product</h2>
+    <form onsubmit="return false;">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Product name</label>
+          <input id="f-name" type="text" placeholder="e.g Monitor" />
+        </div>
+        <div class="form-group">
+          <label>Price (S/.)</label>
+          <input id="f-price" type="number" placeholder="e.g 250" min="0" />
+        </div>
+        <div class="form-group">
+          <label>Stock quantity</label>
+          <input id="f-stock" type="number" placeholder="e.g 10" min="0" />
+        </div>
+        <div class="form-group">
+          <label>Minimum stock</label>
+          <input id="f-min" type="number" placeholder="e.g 5" min="0" />
+        </div>
+        <div class="form-group full">
+          <label>Category</label>
+          <select id="f-cat">
+            <option>Electronics</option>
+            <option>Furniture</option>
+            <option>Clothing</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <button class="btn-add" onclick="addProduct()">Add Product</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="edit-modal" class="modal-overlay">
+  <div class="modal">
+    <h3>Edit Product</h3>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Product name</label>
+        <input id="e-name" type="text" />
+      </div>
+      <div class="form-group">
+        <label>Price (S/.)</label>
+        <input id="e-price" type="number" min="0" />
+      </div>
+      <div class="form-group">
+        <label>Stock quantity</label>
+        <input id="e-stock" type="number" min="0" />
+      </div>
+      <div class="form-group">
+        <label>Minimum stock</label>
+        <input id="e-min" type="number" min="0" />
+      </div>
+      <div class="form-group full">
+        <label>Category</label>
+        <select id="e-cat">
+          <option>Electronics</option>
+          <option>Furniture</option>
+          <option>Clothing</option>
+          <option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveEdit()">Save changes</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const SUPABASE_URL = 'https://upsqqugjckahonmlkciq.supabase.co'
+const SUPABASE_KEY = 'sb_publishable_QR1bivPH7gCnafMLe49mQw_Bvttg3am'
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
+let products = []
+let editingId = null
+
+async function loadProducts() {
+  const { data, error } = await sb.from('products').select('*').order('id')
+  if (error) { toast('Error loading products.'); return; }
+  products = data
+  render()
+}
+
+function render() {
+  renderStats()
+  renderTable()
+}
+
+function renderStats() {
+  const total    = products.length
+  const lowStock = products.filter(p => p.stock < p.min).length
+  const value    = products.reduce((s, p) => s + p.price * p.stock, 0)
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat-card"><p>Total Products</p><h3>${total}</h3></div>
+    <div class="stat-card"><p>Low Stock Items</p><h3>${lowStock}</h3></div>
+    <div class="stat-card"><p>Total Stock Value</p><h3>S/. ${value.toLocaleString('es-PE')}</h3></div>`
+}
+
+function renderTable() {
+  const tbody = document.getElementById('product-tbody')
+  if (!products.length) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#888;padding:28px;">No products yet. Add one below.</td></tr>`
+    return
+  }
+  tbody.innerHTML = products.map(p => {
+    const isLow = p.stock < p.min
+    const stockCell = isLow ? `<span class="low-stock">${p.stock} ⚠</span>` : p.stock
+    return `
+      <tr>
+        <td>${esc(p.name)}</td>
+        <td>S/. ${p.price.toLocaleString('es-PE')}</td>
+        <td>${stockCell}</td>
+        <td>${p.min}</td>
+        <td>${esc(p.cat)}</td>
+        <td>
+          <button onclick="openEdit(${p.id})">Edit</button>
+          <button onclick="deleteProduct(${p.id})" style="background:#fde8e8;color:#c0392b;">Delete</button>
+        </td>
+      </tr>`
+  }).join('')
+}
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c =>
+    ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]))
+}
+
+async function addProduct() {
+  const name  = document.getElementById('f-name').value.trim()
+  const price = parseFloat(document.getElementById('f-price').value)
+  const stock = parseInt(document.getElementById('f-stock').value)
+  const min   = parseInt(document.getElementById('f-min').value)
+  const cat   = document.getElementById('f-cat').value
+
+  if (!name || isNaN(price) || isNaN(stock) || isNaN(min)) { toast('Please fill in all fields.'); return }
+  if (price < 0 || stock < 0 || min < 0) { toast('Values cannot be negative.'); return }
+
+  const { error } = await sb.from('products').insert([{ name, price, stock, min, cat }])
+  if (error) { toast('Error adding product.'); return }
+
+  document.getElementById('f-name').value  = ''
+  document.getElementById('f-price').value = ''
+  document.getElementById('f-stock').value = ''
+  document.getElementById('f-min').value   = ''
+
+  await loadProducts()
+  toast(`"${name}" added successfully.`)
+}
+
+async function deleteProduct(id) {
+  const p = products.find(x => x.id === id)
+  if (!p) return
+  const { error } = await sb.from('products').delete().eq('id', id)
+  if (error) { toast('Error deleting product.'); return }
+  await loadProducts()
+  toast(`"${p.name}" removed.`)
+}
+
+function openEdit(id) {
+  const p = products.find(x => x.id === id)
+  if (!p) return
+  editingId = id
+  document.getElementById('e-name').value  = p.name
+  document.getElementById('e-price').value = p.price
+  document.getElementById('e-stock').value = p.stock
+  document.getElementById('e-min').value   = p.min
+  document.getElementById('e-cat').value   = p.cat
+  document.getElementById('edit-modal').classList.add('open')
+}
+
+function closeModal() {
+  document.getElementById('edit-modal').classList.remove('open')
+  editingId = null
+}
+
+async function saveEdit() {
+  const p = products.find(x => x.id === editingId)
+  if (!p) return
+
+  const name  = document.getElementById('e-name').value.trim()
+  const price = parseFloat(document.getElementById('e-price').value)
+  const stock = parseInt(document.getElementById('e-stock').value)
+  const min   = parseInt(document.getElementById('e-min').value)
+  const cat   = document.getElementById('e-cat').value
+
+  if (!name || isNaN(price) || isNaN(stock) || isNaN(min)) { toast('Please fill in all fields.'); return }
+  if (price < 0 || stock < 0 || min < 0) { toast('Values cannot be negative.'); return }
+
+  const { error } = await sb.from('products').update({ name, price, stock, min, cat }).eq('id', editingId)
+  if (error) { toast('Error updating product.'); return }
+
+  closeModal()
+  await loadProducts()
+  toast(`"${name}" updated successfully.`)
+}
+
+document.getElementById('edit-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal()
+})
+
+let toastTimer
+function toast(msg) {
+  const el = document.getElementById('toast')
+  el.textContent = msg
+  el.classList.add('show')
+  clearTimeout(toastTimer)
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2500)
+}
+
+loadProducts()
+</script>
+
+</body>
+</html>
